@@ -1,0 +1,49 @@
+FROM php:8.2-fpm-alpine
+
+ARG UID
+ARG GID
+
+ENV UID=${UID}
+ENV GID=${GID}
+
+COPY . /var/www/html
+
+WORKDIR /var/www/html
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# MacOS staff group's
+RUN delgroup dialout
+
+# Assign user:group of UID:GID to laravel
+RUN addgroup -g ${GID} --system laravel
+RUN adduser -G laravel --system -D -s /bin/sh -u ${UID} laravel
+
+# Set user:group that run php-fpm as laravel
+RUN sed -i "s/user = www-data/user = laravel/g" /usr/local/etc/php-fpm.d/www.conf
+RUN sed -i "s/group = www-data/group = laravel/g" /usr/local/etc/php-fpm.d/www.conf
+RUN echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
+
+RUN apk update && apk add \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip
+
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Set file permissions
+RUN chown -R laravel:laravel /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod 777 -R /var/www/html/storage /var/www/html/bootstrap/cache
+
+USER laravel
+
+RUN composer install
+
+# NOTE: this command causes ERROR "command php-fpm is not defined"
+# ENTRYPOINT [ "php", "/var/www/html/artisan" ]
+
+# CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
+EXPOSE 9000
+CMD ["php-fpm"]

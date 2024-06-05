@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      # NOTE: need to match DB_*** env vars in Laravel project .env file
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=laravel
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=secret
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+  laravel:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    ports:
+      - 9000:9000
+    volumes:
+      - laravel_repo:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    ports:
+      - 80:80
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - laravel_repo:/var/www/html
+    depends_on:
+      - laravel
+    networks:
+      - laravel
+
+volumes:
+  dbdata:
+    driver: local
+  laravel_repo:
+    driver: local
+
+networks:
+  laravel:
+    driver: bridge
