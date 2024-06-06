@@ -3,6 +3,7 @@ version: '3.9'
 services:
   mysql:
     image: mysql
+    container_name: mysql
     restart: unless-stopped
     tty: true
     ports:
@@ -32,6 +33,7 @@ services:
       - laravel_network
 
   laravel:
+    container_name: laravel
     build:
       context: ./laravel
       dockerfile: Dockerfile
@@ -46,6 +48,7 @@ services:
       - laravel_network
 
   webdev:
+    container_name: webapp
     build:
       context: ./webapp
       dockerfile: Dev.Dockerfile
@@ -67,7 +70,7 @@ services:
 
   nginx:
     build:
-      context: ./docker/nginx
+      context: ./nginx
       dockerfile: Dockerfile
       args:
         - UID=${UID:-1000}
