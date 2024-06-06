@@ -1,0 +1,15 @@
+{
+  "login": "ログイン",
+  "signin": "サインイン",
+  "signup": "新規登録",
+  "logout": "ログアウト",
+  "error": {
+    "auth": {
+      "invalid-email": "メールアドレスが無効です",
+      "invalid-password": "パスワードが無効です",
+      "invalid-username": "ユーザー名が無効です",
+      "user-not-found": "ユーザーが見つかりません",
+      "user-disabled": "ユーザーが無効です"
+    }
+  }
+}
