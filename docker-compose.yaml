@@ -38,8 +38,6 @@ services:
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
-    # ports:
-    #   - 9000:9000
     volumes:
       - laravel_repo:/var/www/html
     depends_on:
@@ -49,7 +47,7 @@ services:
 
   webdev:
     build:
-      context: ./vite-vue
+      context: ./webapp
       dockerfile: Dev.Dockerfile
     restart: unless-stopped
     tty: true
@@ -57,8 +55,11 @@ services:
       - 5173:5173
     volumes:
       - laravel_repo:/var/www/html
-      # NOTE: mount vite-vue project folder to web container to enable hot reload
-      - ./vite-vue:/var/www/html/web
+      # NOTE: mount webapp project folder to web container to enable hot reload
+      - ./webapp:/var/www/html/web:cached
+      # NOTE: exclude these files and folders from host
+      - /var/www/html/web/node_modules/
+      - /var/www/html/web/pnpm-lock.json
     depends_on:
       - laravel
     networks:
