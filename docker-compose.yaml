@@ -1,4 +1,4 @@
-version: '3.9'
+version: '4.2'
 
 services:
   mysql:
@@ -42,6 +42,7 @@ services:
         - GID=${GID:-1000}
     volumes:
       - laravel_repo:/var/www/html
+      - webapp_repo:/var/www/html/web:ro
     depends_on:
       - mysql
     networks:
@@ -52,17 +53,23 @@ services:
     build:
       context: ./webapp
       dockerfile: Dev.Dockerfile
+    # NOTE: watch only supported from Docker Composer version 2.22 and later. 
+    # https://docs.docker.com/compose/file-watch/
+    # Install latest Docker Desktop
+    develop:
+      watch:
+        - action: sync
+          path: ./webapp
+          target: /var/www/html/web
+        - action: rebuild
+          path: ./webapp/package.json
     restart: unless-stopped
     tty: true
     ports:
       - 5173:5173
     volumes:
       - laravel_repo:/var/www/html
-      # NOTE: mount webapp project folder to web container to enable hot reload
-      - ./webapp:/var/www/html/web:cached
-      # NOTE: exclude these files and folders from host
-      - /var/www/html/web/node_modules/
-      - /var/www/html/web/pnpm-lock.json
+      - webapp_repo:/var/www/html/web
     depends_on:
       - laravel
     networks:
@@ -90,6 +97,8 @@ volumes:
   dbdata:
     driver: local
   laravel_repo:
+    driver: local
+  webapp_repo:
     driver: local
 
 networks:

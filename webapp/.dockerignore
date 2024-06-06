@@ -9,7 +9,6 @@ lerna-debug.log*
 
 node_modules
 package-lock.json
-pnpm-lock.yaml
 .DS_Store
 dist
 dist-ssr
@@ -37,3 +36,5 @@ playwright-report/
 .gitignore
 .git
 .github
+Dockerfile
+*.Dockerfile
