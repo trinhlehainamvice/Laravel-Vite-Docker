@@ -16,7 +16,7 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
     networks:
-      - laravel
+      - laravel_network
 
   phpmyadmin:
     image: phpmyadmin
@@ -29,7 +29,7 @@ services:
     depends_on:
       - mysql
     networks:
-      - laravel
+      - laravel_network
 
   laravel:
     build:
@@ -38,14 +38,31 @@ services:
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
-    ports:
-      - 9000:9000
+    # ports:
+    #   - 9000:9000
     volumes:
       - laravel_repo:/var/www/html
     depends_on:
       - mysql
     networks:
+      - laravel_network
+
+  webdev:
+    build:
+      context: ./vite-vue
+      dockerfile: Dev.Dockerfile
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 5173:5173
+    volumes:
+      - laravel_repo:/var/www/html
+      # NOTE: mount vite-vue project folder to web container to enable hot reload
+      - ./vite-vue:/var/www/html/web
+    depends_on:
       - laravel
+    networks:
+      - laravel_network
 
   nginx:
     build:
@@ -63,7 +80,7 @@ services:
     depends_on:
       - laravel
     networks:
-      - laravel
+      - laravel_network
 
 volumes:
   dbdata:
@@ -72,5 +89,5 @@ volumes:
     driver: local
 
 networks:
-  laravel:
+  laravel_network:
     driver: bridge

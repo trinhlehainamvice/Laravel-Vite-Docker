@@ -22,17 +22,29 @@ export default defineConfig(({ mode }) => {
       hmr: { host: process.env.APP_URL },
       host: process.env.APP_URL
     }
-  } else if (mode === 'local' || mode === 'development') {
+  } else if (mode === 'development') {
     config.server = {
       hmr: {
-        host: process.env.APP_URL
+        // host: process.env.APP_URL
+        host: 'localhost'
       },
+      // NOTE: need to enable host:0.0.0.0 in docker to expose docker network
+      host: '0.0.0.0',
       watch: {
         usePolling: true
       }
     }
   }
-  config.plugins.push(laravel({ input: ['./src/main.ts'] }))
+
+  // TODO: need a filter env to seperate docker with main server configs
+  config.plugins.push(
+    laravel({
+      publicDirectory: './../public',
+      buildDirectory: './../public/build',
+      input: ['./src/main.ts'],
+      refresh: ['../resources/views/**/*.blade.php']
+    })
+  )
 
   config.resolve = {
     alias: {

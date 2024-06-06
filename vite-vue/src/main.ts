@@ -13,7 +13,7 @@ import Pusher from 'pusher-js'
 // @ts-ignore
 import lodash from 'lodash'
 
-if (import.meta.env.MODE === 'local' || import.meta.env.MODE === 'development') {
+if (import.meta.env.MODE === 'development') {
   // import './bootstrap';
   // Laravel vite プラグインはReffectのサイトを参考に導入しています
   // https://reffect.co.jp/laravel/laravel9_vite
