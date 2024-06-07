@@ -6,11 +6,8 @@ ARG GID
 ENV UID=${UID}
 ENV GID=${GID}
 
-COPY . /var/www/html
-
 WORKDIR /var/www/html
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # MacOS staff group's
 RUN delgroup dialout
@@ -33,17 +30,30 @@ RUN apk update && apk add \
 
 RUN docker-php-ext-install pdo pdo_mysql
 
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY . .
+
 # Set file permissions
 RUN chown -R laravel:laravel /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod 777 -R /var/www/html/storage /var/www/html/bootstrap/cache
 
+RUN chown laravel:laravel /var/www/html/entrypoint.sh
+RUN chmod +x /var/www/html/entrypoint.sh
+
 USER laravel
 
-RUN composer install
+# RUN composer install
+# TODO: need to filter environment variables when copy to docker image
+# RUN cp .env.example .env
+# RUN php artisan key:generate
+
+# NOTE: need to set entrypoint.sh to #!/bin/sh in alpine image
+# also ensure entrypoint.sh filesystem is set to LF
+ENTRYPOINT [ "./entrypoint.sh" ]
 
 # NOTE: this command causes ERROR "command php-fpm is not defined"
 # ENTRYPOINT [ "php", "/var/www/html/artisan" ]
 
 # CMD ["php-fpm", "-y", "/usr/local/etc/php-fpm.conf", "-R"]
 EXPOSE 9000
-CMD ["php-fpm"]

@@ -20,3 +20,7 @@ yarn-error.log
 /.vscode
 .gitignore
 .gitattributes
+/resources/js
+vite.config.js
+package.json
+package-lock.json

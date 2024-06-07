@@ -42,7 +42,6 @@ services:
         - GID=${GID:-1000}
     volumes:
       - laravel_repo:/var/www/html
-      - webapp_repo:/var/www/html/web:ro
     depends_on:
       - mysql
     networks:
@@ -69,6 +68,10 @@ services:
       - 5173:5173
     volumes:
       - laravel_repo:/var/www/html
+      # NOTE: volume mount process is happened AFTER docker image is built
+      # mount process will overwrite target directory with contents of named volume
+      # so all contents created in Dockerfile will be lost
+      # tell Docker that webapp container has its own persistent volume
       - webapp_repo:/var/www/html/web
     depends_on:
       - laravel
