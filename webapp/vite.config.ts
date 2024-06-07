@@ -24,12 +24,11 @@ export default defineConfig(({ mode }) => {
     }
   } else if (mode === 'development') {
     config.server = {
-      hmr: {
-        // host: process.env.APP_URL
-        host: 'localhost'
-      },
-      // NOTE: need to enable host:0.0.0.0 in docker to expose docker network
+      hmr: { host: 'localhost' },
+      // NOTE: need to enable host:0.0.0.0 to expose docker network to outside world
+      // Because laravel vite plugin hot reload will redirect web browser to access typescript resources on this Docker container.
       host: '0.0.0.0',
+      port : 5173,
       watch: {
         usePolling: true
       }
