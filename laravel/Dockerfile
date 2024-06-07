@@ -43,10 +43,10 @@ RUN chmod +x /var/www/html/entrypoint.sh
 
 USER laravel
 
-# RUN composer install
+RUN composer install
 # TODO: need to filter environment variables when copy to docker image
-# RUN cp .env.example .env
-# RUN php artisan key:generate
+RUN cp .env.example .env
+RUN php artisan key:generate
 
 # NOTE: need to set entrypoint.sh to #!/bin/sh in alpine image
 # also ensure entrypoint.sh filesystem is set to LF

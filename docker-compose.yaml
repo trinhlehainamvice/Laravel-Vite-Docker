@@ -43,7 +43,11 @@ services:
     volumes:
       - laravel_repo:/var/www/html
     depends_on:
-      - mysql
+      # NOTE: Laravel setup require connect to database
+      # so need to wait until mysql is ready
+      # https://stackoverflow.com/questions/42567475/docker-compose-check-if-mysql-connection-is-ready 
+      mysql:
+        condition: service_started
     networks:
       - laravel_network
 
