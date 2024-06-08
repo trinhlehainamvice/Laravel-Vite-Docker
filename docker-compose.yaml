@@ -19,18 +19,17 @@ services:
     networks:
       - laravel_network
 
-  # phpmyadmin:
-  #   image: phpmyadmin
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8080:80
-  #   environment:
-  #     - PMA_HOST=mysql
-  #     - PMA_PORT=3306
-  #   depends_on:
-  #     - mysql
-  #   networks:
-  #     - laravel_network
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+    depends_on:
+      - mysql
+    networks:
+      - laravel_network
 
   laravel:
     container_name: laravel
@@ -39,9 +38,6 @@ services:
     build:
       context: ./laravel
       dockerfile: S6Overlay.Dockerfile
-      args:
-        - UID=82
-        - GID=82
     ports:
       - 80:8080
       # - 443:8443

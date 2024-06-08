@@ -19,8 +19,9 @@ FROM base as development
 # We can pass USER_ID and GROUP_ID as build arguments
 # to ensure the www-data user has the same UID and GID
 # as the user running Docker.
-ARG UID
-ARG GID
+# NOTE: default UID:GID for alpine distro that used in serversideup/php8.2-nginx-alpine is 82:82
+ARG UID=82
+ARG GID=82
 
 # Switch to root so we can set the user ID and group ID
 USER root
