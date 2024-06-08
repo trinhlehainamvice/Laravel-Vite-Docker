@@ -3,8 +3,8 @@ FROM nginx:stable-alpine
 ARG UID
 ARG GID
 
-ENV UID=${UID}
-ENV GID=${GID}
+ENV UID=${UID:-1000}
+ENV GID=${GID:-1000}
 
 # MacOS staff group's gid is 20
 RUN delgroup dialout

@@ -19,27 +19,32 @@ services:
     networks:
       - laravel_network
 
-  phpmyadmin:
-    image: phpmyadmin
-    restart: unless-stopped
-    ports:
-      - 8080:80
-    environment:
-      - PMA_HOST=mysql
-      - PMA_PORT=3306
-    depends_on:
-      - mysql
-    networks:
-      - laravel_network
+  # phpmyadmin:
+  #   image: phpmyadmin
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8080:80
+  #   environment:
+  #     - PMA_HOST=mysql
+  #     - PMA_PORT=3306
+  #   depends_on:
+  #     - mysql
+  #   networks:
+  #     - laravel_network
 
   laravel:
     container_name: laravel
+    restart: unless-stopped
+    tty: true
     build:
       context: ./laravel
-      dockerfile: Dockerfile
+      dockerfile: S6Overlay.Dockerfile
       args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+        - UID=82
+        - GID=82
+    ports:
+      - 80:8080
+      # - 443:8443
     volumes:
       - laravel_repo:/var/www/html
     depends_on:
@@ -77,24 +82,6 @@ services:
       # so all contents created in Dockerfile will be lost
       # tell Docker that webapp container has its own persistent volume
       - webapp_repo:/var/www/html/web
-    depends_on:
-      - laravel
-    networks:
-      - laravel_network
-
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
-    ports:
-      - 80:80
-    restart: unless-stopped
-    tty: true
-    volumes:
-      - laravel_repo:/var/www/html
     depends_on:
       - laravel
     networks:

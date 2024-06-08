@@ -46,7 +46,5 @@ else
     echo "Database is already migrated."
 fi
 
-#check if php-fpm is running
-if ! pgrep -x "php-fpm" > /dev/null; then
-    php-fpm
-fi
+# Don't exit to keep container running
+tail -f /dev/null

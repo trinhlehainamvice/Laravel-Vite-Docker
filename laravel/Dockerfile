@@ -8,7 +8,6 @@ ENV GID=${GID}
 
 WORKDIR /var/www/html
 
-
 # MacOS staff group's
 RUN delgroup dialout
 
